@@ -27,20 +27,23 @@
         // Increase pixel density for better image quality
         pixelDensity(4);
 
-        // Create 20 boxes with random dimensions and positions
-        for (let i = 0; i < 1056; i++) {
-          let row = floor(i / 48);
-          let col = i % 48;
+        // Double the grid width and increase depth by 50%
+        const origRows = 22;
+        const numRows = Math.floor(origRows * 1.5); // 33
+        const numCols = 96;
+        for (let i = 0; i < numRows * numCols; i++) {
+          let row = Math.floor(i / numCols);
+          let col = i % numCols;
 
-          // Skip the middle box (row 10, col 23)
-          if (row === 10 && col === 23) {
+          // Skip the middle box (row 16, col 47) for new center
+          if (row === Math.floor(numRows / 2) && col === 47) {
             continue;
           }
 
           boxes.push({
-            x: (col - 23.5) * 100,
+            x: (col - (numCols - 1) / 2) * 100,
             y: 0,
-            z: (row - 10.5) * 100,
+            z: (row - (numRows - 1) / 2) * 100,
             width: 100,
             height: random(90, 110),
             depth: 100,
@@ -86,6 +89,7 @@
       }
 
       function keyPressed() {
+        console.log(keyCode);
         if (keyCode === ENTER) {
           const now = new Date();
           const year = now.getFullYear();
@@ -97,7 +101,14 @@
           const filename = `${year}-${month}-${day}-${hour}-${minute}-${second}.png`;
 
           // Save at high resolution
-          saveCanvas(filename, "png");
+          // saveCanvas(filename, "png");
+
+          const canvas = document.querySelector("canvas");
+
+          const link = document.createElement("a");
+          link.download = filename;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
         }
 
         if (key === " ") {
