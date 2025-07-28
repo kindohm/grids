@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>P5.js Creative App</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- p5.js library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+    <!-- Your p5.js sketch -->
+    <script>
+      let boxes = [];
+      let lightPosition = { x: 0, y: -30, z: 0 };
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight, WEBGL);
+
+        // Increase pixel density for better image quality
+        pixelDensity(4);
+
+        // Create 20 boxes with random dimensions and positions
+        for (let i = 0; i < 1056; i++) {
+          let row = floor(i / 48);
+          let col = i % 48;
+
+          // Skip the middle box (row 10, col 23)
+          if (row === 10 && col === 23) {
+            continue;
+          }
+
+          boxes.push({
+            x: (col - 23.5) * 100,
+            y: 0,
+            z: (row - 10.5) * 100,
+            width: 100,
+            height: random(90, 110),
+            depth: 100,
+            scale: 1,
+          });
+        }
+      }
+
+      function draw() {
+        background(0, 0, 0);
+
+        // Camera controls
+        orbitControl();
+
+        // Add gloomy lighting with point light in center
+        ambientLight(6, 10, 22);
+
+        // Point light at the center where the missing box would be
+        pointLight(
+          130,
+          150,
+          220,
+          lightPosition.x,
+          lightPosition.y,
+          lightPosition.z
+        );
+
+        // Draw all boxes
+        for (let i = 0; i < boxes.length; i++) {
+          push();
+          translate(boxes[i].x, boxes[i].y, boxes[i].z);
+          scale(boxes[i].scale);
+          noStroke();
+          ambientMaterial(25, 35, 55);
+
+          box(boxes[i].width, boxes[i].height, boxes[i].depth);
+          pop();
+        }
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+      }
+
+      function keyPressed() {
+        if (keyCode === ENTER) {
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, "0");
+          const day = String(now.getDate()).padStart(2, "0");
+          const hour = String(now.getHours()).padStart(2, "0");
+          const minute = String(now.getMinutes()).padStart(2, "0");
+          const second = String(now.getSeconds()).padStart(2, "0");
+          const filename = `${year}-${month}-${day}-${hour}-${minute}-${second}.png`;
+
+          // Save at high resolution
+          saveCanvas(filename, "png");
+        }
+
+        if (key === " ") {
+          // Change height of all boxes
+          for (let i = 0; i < boxes.length; i++) {
+            boxes[i].height = random(80, 120);
+          }
+
+          // Randomize light position
+          lightPosition.x = random(-150, 150);
+          lightPosition.y = random(-180, 120);
+          lightPosition.z = random(-150, 150);
+        }
+      }
+    </script>
+  </body>
+</html>
